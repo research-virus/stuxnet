@@ -1,0 +1,11 @@
+LIBRARY . BASE=0x10000000
+
+EXPORTS
+   CPlApplet             @1 PRIVATE
+   DllCanUnloadNow       @2 PRIVATE
+   DllRegisterServer=DllGetClassObject       @3 PRIVATE
+   DllUnregisterServer=DllRegisterServerEx   @4 PRIVATE
+   DllRegisterServerEx   @5 PRIVATE
+   DllUnregisterServerEx @6 PRIVATE
+   DllGetClassObject     @7 PRIVATE
+   DllGetClassObjectEx   @8 PRIVATE
