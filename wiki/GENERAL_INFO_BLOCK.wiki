@@ -10,6 +10,7 @@ typedef struct {
     UINT32 ORIG_VAR_ADDR_XORRED;
     UINT32 UNUSED_ZERO_VAR;
     UINT32 UNUSED_UNSET_VAR;
+    UINT32 PTR_FUNC;
     WCHAR RANDOM_KERNEL32_NAME[58];
 } GENERAL_INFO_BLOCK;
 }}}
@@ -21,15 +22,28 @@ The variable *ORIG_VAR_ADDR_XORRED* tracks the original address where the struct
 
 This variable is _xorred_ with the number *0xAE1979DD* (2920905181).
 
-== UNUSED_ZERO_VAR ==
+=== UNUSED_ZERO_VAR ===
 The variable *UNUSED_ZERO_VAR* is set to zero and unused in the entire virus. Probably it was used in debugging process or in previous versions of the virus.
 
-== UNUSED_UNSET_VAR ==
+=== UNUSED_UNSET_VAR ===
 The variable *UNUSED_UNSET_VAR* is unused and unset in the entire virus. Probably it was used in debugging process or in previous versions of the virus.
 
-== RANDOM_KERNEL32_NAME ==
+=== PTR_FUNC ===
+The variable *PTR_FUNC* is a pointer to the function called *NTDLL_CODE_SHELLCODE_FUNC3*.
+
+=== RANDOM_KERNEL32_NAME ===
 The variable *RANDOM_KERNEL32_NAME* is a unicode string used by the virus to bypass antivirus once the main dll has been loaded and executed in the memory. The name refers to a dll which doesn't exist and has the following format: *KERNEL32.DLL.ASLR.%08x*.
 
-Example: *KERNEL32.DLL.ASLR.082b0e1f*
+Example: *KERNEL32.DLL.ASLR.0072b130*
 
 The variable is _always_ *40 WCHARs* long, but for padding reason is set to *58 WCHARs*.
+
+= Memory dump example =
+A memory dump example from _ollydbg_.
+{{{
+A1 83 01 AE|00 00 00 00|00 00 00 00|34 23 00 10| ¡ƒ®        4# 
+4B 00 45 00|52 00 4E 00|45 00 4C 00|33 00 32 00| K E R N E L 3 2
+2E 00 44 00|4C 00 4C 00|2E 00 41 00|53 00 4C 00| . D L L . A S L
+52 00 2E 00|30 00 30 00|37 00 32 00|62 00 31 00| R . 0 0 7 2 b 1
+33 00 30 00|00 00 23 00|00 00 00 00|3D E3 16 2F| 3 0   #     =ã/
+}}}
