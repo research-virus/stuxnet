@@ -8,8 +8,8 @@ The C structure is the following:
 {{{
 typedef struct {
     UINT32 ORIG_VAR_ADDR_XORRED;
-    UINT32 UNUSED_UNSET_VAR;
     UINT32 UNUSED_ZERO_VAR;
+    UINT32 UNUSED_UNSET_VAR;
     WCHAR RANDOM_KERNEL32_NAME[58];
 } GENERAL_INFO_BLOCK;
 }}}
@@ -21,11 +21,11 @@ The variable *ORIG_VAR_ADDR_XORRED* tracks the original address where the struct
 
 This variable is _xorred_ with the number *0xAE1979DD* (2920905181).
 
-== UNUSED_UNSET_VAR ==
-The variable *UNUSED_UNSET_VAR* is unused and unset in the entire virus. Probably it was used in debugging process or in previous versions of the virus.
-
 == UNUSED_ZERO_VAR ==
 The variable *UNUSED_ZERO_VAR* is set to zero and unused in the entire virus. Probably it was used in debugging process or in previous versions of the virus.
+
+== UNUSED_UNSET_VAR ==
+The variable *UNUSED_UNSET_VAR* is unused and unset in the entire virus. Probably it was used in debugging process or in previous versions of the virus.
 
 == RANDOM_KERNEL32_NAME ==
 The variable *RANDOM_KERNEL32_NAME* is a unicode string used by the virus to bypass antivirus once the main dll has been loaded and executed in the memory. The name refers to a dll which doesn't exist and has the following format: *KERNEL32.DLL.ASLR.%08x*.
