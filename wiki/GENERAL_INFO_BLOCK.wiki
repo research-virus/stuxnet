@@ -17,7 +17,7 @@ typedef struct {
 
 = Variables =
 Following the variables of the structure are analized.
-== ORIG_VAR_ADDR_XORRED ==
+=== ORIG_VAR_ADDR_XORRED ===
 The variable *ORIG_VAR_ADDR_XORRED* tracks the original address where the structure has been initalized.
 
 This variable is _xorred_ with the number *0xAE1979DD* (2920905181).
