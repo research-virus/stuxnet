@@ -1,5 +1,5 @@
 = Introduction =
-The *GENERAL_INFO_BLOCK* structure is used by the virus to track some important information like the _original address_ where the structure has been inially initialized (ORIG_VAR_ADDR_XORRED) or the _random module name_ (RANDOM_KERNEL32_NAME). Currently there are 2 unused variables probably used for *debugging information* or in *previous version*, one them set to zero.
+The *GENERAL_INFO_BLOCK* structure is used by the virus to track some important information like the _original address_ where the structure has been inially initialized or the _random module name_. Currently there are 2 unused variables probably used for *debugging information* or in *previous version*, one them set to zero.
 
 = Structure =
 The structure is *128 bytes* long.
