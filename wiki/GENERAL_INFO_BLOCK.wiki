@@ -11,7 +11,7 @@ typedef struct {
     UINT32 UNUSED_ZERO_VAR;
     UINT32 UNUSED_UNSET_VAR;
     UINT32 PTR_FUNC;
-    WCHAR RANDOM_KERNEL32_NAME[58];
+    WCHAR RANDOM_KERNEL32_NAME[40];
 } GENERAL_INFO_BLOCK;
 }}}
 
@@ -36,8 +36,6 @@ The variable *RANDOM_KERNEL32_NAME* is a unicode string used by the virus to byp
 
 Example: *KERNEL32.DLL.ASLR.0072b130*
 
-The variable is _always_ *40 WCHARs* long, but for padding reason is set to *58 WCHARs*.
-
 = Memory dump example =
 A memory dump example from _ollydbg_.
 {{{
@@ -46,4 +44,7 @@ A1 83 01 AE|00 00 00 00|00 00 00 00|34 23 00 10| ¡ƒ®        4# 
 2E 00 44 00|4C 00 4C 00|2E 00 41 00|53 00 4C 00| . D L L . A S L
 52 00 2E 00|30 00 30 00|37 00 32 00|62 00 31 00| R . 0 0 7 2 b 1
 33 00 30 00|00 00 23 00|00 00 00 00|3D E3 16 2F| 3 0   #     =ã/
+F4 FA 18 00|9D 3E FC 75|00 04 00 00|01 00 00 40| ôú >üu     @
+88 02 00 10|FF FF FF FF|B8 32 00 10|FF FF FF FF| ˆ ÿÿÿÿ¸2 ÿÿÿÿ
+F0 00 00 10|04 00 00 00|28 FB 18 00|A5 11 00 10| ð     (û ¥ 
 }}}
