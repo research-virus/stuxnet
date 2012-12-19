@@ -9,8 +9,8 @@ The *SHELLCODE_BLOCKS_SECTION* is _0xB3A_ (2874) bytes long and is formed by fou
 The *MAP_INFO_BLOCK* is _36_ bytes long and is formed by 9 UINT32:
 
 || Position || Value || Known value ||
-|| 0 || (UINT32)&pCurrentProcessMapView[4] + GetRealtivePositionOfFunc1() || pCurrentProcessMapView + 1639 ||
-|| 1 || (UINT32)&pCurrentProcessMapView[4] + GetRealtivePositionOfFunc3() || pCurrentProcessMapView + 1949 ||
+|| 0 || (UINT32)&pCurrentProcessMapView`[4]` + GetRealtivePositionOfFunc1() || pCurrentProcessMapView + 1639 ||
+|| 1 || (UINT32)&pCurrentProcessMapView`[4]` + GetRealtivePositionOfFunc3() || pCurrentProcessMapView + 1949 ||
 || 2 || pModuleProcessBaseAddr + iPointer || pCurrentProcessMapView + 36 ||
 || 3 || (UINT32)&DecodeModuleNameA - (UINT32)&__ASM_BLOCK1_0 || 1189 ||
 || 4 || pModuleProcessBaseAddr + iPointer || pCurrentProcessMapView + 1225 ||
