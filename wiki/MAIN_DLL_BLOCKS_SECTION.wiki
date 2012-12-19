@@ -1,17 +1,18 @@
 = Blocks =
 The *MAIN_DLL_BLOCKS_SECTION* is _0x7A000_ (499712) bytes long and is formed by three distinct blocks:
- * The *[https://code.google.com/p/open-myrtus/wiki/GENERAL_INFO_BLOCK GENERAL_INFO_BLOCK]* (_128 bytes_) where the information about _the executable_ will be stored.
- * The *MAP_INFO_BLOCK* (_24 bytes_) where the information about _the mapped section_ will be stored.
- * The *MAIN_DLL_BLOCK* (_474986 bytes_) where _the decrypted dll_ stored in the *.stub* section will be copied.
+ # The *[https://code.google.com/p/open-myrtus/wiki/GENERAL_INFO_BLOCK GENERAL_INFO_BLOCK]* (_128 bytes_) where the information about _the executable_ will be stored.
+ # The *MAP_INFO_BLOCK* (_24 bytes_) where the information about _the mapped section_ will be stored.
+ # The *MAIN_DLL_BLOCK* (_474986 bytes_) where _the decrypted dll_ stored in the *.stub* section will be copied.
 
 === MAP_INFO_BLOCK ===
 The *MAP_INFO_BLOCK* is _24_ bytes long and is formed by 6 UINT32:
- * 0.
- * SectionPointer2 + BaseSectionPointer (152).
- * InSize1 (0).
- * SectionPointer2 + BaseSectionPointer (152).
- * InSize2 (0x79A00)
- * a5 (-1).
+|| Position || Value || Known value ||
+|| 0 || 0 || 0 ||
+|| 1 || SectionPointer2 + BaseSectionPointer || SectionPointer2 + 152 ||
+|| 2 || InSize1 || 0 ||
+|| 3 || SectionPointer2 + BaseSectionPointer || SectionPointer2 + 152 ||
+|| 4 || InSize2 || 0x79A00 ||
+|| 5 || a5 || -1 ||
 
 === MAIN_DLL_BLOCK ===
 The *MAIN_DLL_BLOCK* contains the main dll code.
