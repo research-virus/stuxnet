@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,35 +14,11 @@
    limitations under the License.
 ******************************************************************************************/
 
-#include "B. EncodingUtils.h"
+#ifndef __ENCODING_H__
+#define __ENCODING_H__
 
-// 100% (ASM) CODE MATCH
-__declspec(naked) void __memcpy(void *pDestination, const void *pSource, size_t iSize)
-{
-	__asm {
-		push    ebp
-		mov     ebp, esp
-		push    esi
-		push    edi
-		mov     edi, pDestination
-		mov     esi, pSource
-		mov     ecx, iSize
-		rep movsb
-		pop     edi
-		pop     esi
-		pop     ebp
-		retn
-	}
-}
+#include "StdAfx.h"
 
-// 100% (C) CODE MATCH
-FARPROC GetFunctionFromKERNEL32(const char *pEncodedFunctionName)
-{
-	return GetFunctionFromModule(ENCODED_KERNEL32_DLL, pEncodedFunctionName);
-}
+BOOL DecodeEncryptedModuleNames();
 
-// 100% (C) CODE MATCH
-FARPROC GetFunctionFromNTDLL(const char *pEncodedFunctionName)
-{
-	return GetFunctionFromModule(ENCODED_NTDLL_DLL, pEncodedFunctionName);
-}
+#endif

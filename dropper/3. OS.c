@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,58 +14,30 @@
    limitations under the License.
 ******************************************************************************************/
 
-#include "7. AssemblyBlock0.h"
+#include "3. OS.h"
+#include "2. STUBHandler.h"
+
+#include "config.h"
 
 /*************************************************************************
-** ASSEMBLY BLOCK 0.                                                    **
+** This function check that the system is not too old or too new,       **
+** it works with all the versions of Windows from Windows 2000 to       **
+** Windows 8 included, in the asm code the function is called with a    **
+** value (0 and 1) but actually it is not used, maybe it was used in    **
+** debug mode.                                                          **
 *************************************************************************/
-
-void __declspec(naked) __ASM_BLOCK0_0(void)
+void CheckSystemVersion(BOOL bBool)
 {
-	__asm
+	OSVERSIONINFO lpSysInfo;
+	lpSysInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	
+	if(!GetVersionEx(&lpSysInfo)
+	|| lpSysInfo.dwPlatformId != VER_PLATFORM_WIN32_NT
+	|| (lpSysInfo.dwMajorVersion < 5 && lpSysInfo.dwMajorVersion > 6))
 	{
-		cmp     edx, [eax]
-		dec     ecx
-		stosd
-
-		mov     dl, 0
-		jmp     short __ASM_REF_0
-		
-		mov     dl, 1
-		jmp     short __ASM_REF_0
-		
-		mov     dl, 2
-		jmp     short __ASM_REF_0
-		
-		mov     dl, 3
-		jmp     short __ASM_REF_0
-		
-		mov     dl, 4
-		jmp     short __ASM_REF_0
-		
-		mov     dl, 5
-		jmp     short $+2
-		
-	__ASM_REF_0:
-		push    edx
-		call    __ASM_BLOCK0_2
+		DEBUG_P("Wrong system version detected.")
+		return;
 	}
-}
-
-void __declspec(naked) __ASM_BLOCK0_1(void)
-{
-	__asm
-	{
-		xchg    ebx, [ebx+0]
-		add     [eax], dl
-	}
-}
-
-void __declspec(naked) __ASM_BLOCK0_2(void)
-{
-	__asm
-	{
-		pop     edx
-		jmp     dword ptr [edx]
-	}
+	
+	Core_Load();
 }

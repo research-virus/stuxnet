@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 ******************************************************************************************/
 
 #include "8. AssemblyBlock1.h"
+#include "9. AssemblyBlock2.h"
 
 /*************************************************************************
 ** ASSEMBLY BLOCK 1.                                                    **

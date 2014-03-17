@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,12 +14,21 @@
    limitations under the License.
 ******************************************************************************************/
 
-#ifndef __OS_H__
-#define __OS_H__
+#ifndef __ENCODING_ALGORITHMS_H__
+#define __ENCODING_ALGORITHMS_H__
 
-#include "define.h"
-#include "2. STUBHandler.h"
+#include "StdAfx.h"
 
-void CheckSystemVersion(BOOL bUknownBool);
+void DecodeModuleNameA(const WORD *pEncodedFunctionName, char *pDecodedFunctionName);
+void DecodeModuleNameW(const WORD *pEncodedModuleName, WCHAR *pDecodedModuleName);
+
+HMODULE GetModuleNTDLL(void);
+
+FARPROC GetFunctionFromModule(const WCHAR *pEncodedModuleName, const char *pEncodedFunctionName);
+
+void __memcpy(void *lpTo, const void *lpFrom, size_t nSize);
+
+FARPROC GetFunctionFromKERNEL32(const WORD *lpEncodedFunc);
+FARPROC GetFunctionFromNTDLL(const WORD *lpEncodedFunc);
 
 #endif

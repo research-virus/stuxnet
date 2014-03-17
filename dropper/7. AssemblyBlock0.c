@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,25 +14,59 @@
    limitations under the License.
 ******************************************************************************************/
 
-#include "3. OS.h"
+#include "7. AssemblyBlock0.h"
 
 /*************************************************************************
-** This function check that the system is not too old or too new,       **
-** it works with all the versions of Windows from Windows 2000 to       **
-** Windows 8 included, in the asm code the function is called with a    **
-** value (0 and 1) but actually it is not used, maybe it was used in    **
-** the past.                                                            **
+** ASSEMBLY BLOCK 0.                                                    **
 *************************************************************************/
-void CheckSystemVersion(BOOL bUknownBool)
-{
-	struct _OSVERSIONINFOW sVersionInformation; // [sp+0h] [bp-114h]@1
 
-	sVersionInformation.dwOSVersionInfoSize = sizeof(struct _OSVERSIONINFOW);
-	
-	if(!GetVersionExW(&sVersionInformation)) return;
-	
-	if(sVersionInformation.dwPlatformId != VER_PLATFORM_WIN32_NT) return;
-	if(sVersionInformation.dwMajorVersion < 5 && sVersionInformation.dwMajorVersion > 6) return;
-	
-	LoadSTUBSection();
+void __declspec(naked) __ASM_BLOCK0_0(void)
+{
+	__asm
+	{
+		cmp     edx, [eax]
+		dec     ecx
+		stosd
+
+		mov     dl, 0
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 1
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 2
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 3
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 4
+		jmp     short __ASM_REF_0
+		
+		mov     dl, 5
+		jmp     short $+2
+		
+	__ASM_REF_0:
+		push    edx
+		call    __ASM_BLOCK0_2
+	}
+}
+
+// it is a pointer
+void __declspec(naked) __ASM_BLOCK0_1(void)
+{
+	__asm
+	{
+		xchg    ebx, [ebx+0]
+		add     [eax], dl
+	}
+}
+
+void __declspec(naked) __ASM_BLOCK0_2(void)
+{
+	__asm
+	{
+		pop     edx
+		jmp     dword ptr [edx]
+	}
 }
