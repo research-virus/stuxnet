@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,15 +14,11 @@
    limitations under the License.
 ******************************************************************************************/
 
-#ifndef __ENCODING_UTILS_H__
-#define __ENCODING_UTILS_H__
+#ifndef __OS_H__
+#define __OS_H__
 
-#include "data.h"
-#include "A. EncodingAlgorithms.h"
+#include "StdAfx.h"
 
-void __memcpy(void *pDestination, const void *pSource, size_t iSize);
-
-FARPROC GetFunctionFromKERNEL32(const char *pEncodedFunctionName);
-FARPROC GetFunctionFromNTDLL(const char *pEncodedFunctionName);
+void CheckSystemVersion(BOOL bUknownBool);
 
 #endif

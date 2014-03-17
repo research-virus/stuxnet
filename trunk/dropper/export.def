@@ -1,0 +1,9 @@
+EXPORTS
+   CPlApplet             PRIVATE
+   DllCanUnloadNow       PRIVATE
+   DllRegisterServer=DllGetClassObject       PRIVATE
+   DllUnregisterServer=DllRegisterServerEx   PRIVATE
+   DllRegisterServerEx   PRIVATE
+   DllUnregisterServerEx PRIVATE
+   DllGetClassObject     PRIVATE
+   DllGetClassObjectEx   PRIVATE

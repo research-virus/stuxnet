@@ -1,5 +1,5 @@
 /******************************************************************************************
-  Copyright 2012-2013 Christian Roggia
+  Copyright (C) 2012-2014 Christian Roggia <christian.roggia@gmail.com>
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,7 +17,30 @@
 #ifndef __ASSEMBLY_BLOCK2_H__
 #define __ASSEMBLY_BLOCK2_H__
 
-#include "define.h"
+#include "StdAfx.h"
+
+typedef struct _UNICODE_STRING {
+        USHORT Length;
+        USHORT MaximumLength;
+        PWSTR  Buffer;
+} UNICODE_STRING, *PUNICODE_STRING;
+
+typedef struct _OBJECT_ATTRIBUTES {
+        ULONG Length;
+        HANDLE RootDirectory;
+        UNICODE_STRING *ObjectName;
+        ULONG Attributes;
+        PVOID SecurityDescriptor;
+        PVOID SecurityQualityOfService;
+} OBJECT_ATTRIBUTES;
+
+#define POBJECT_ATTRIBUTES OBJECT_ATTRIBUTES*
+
+typedef enum _SECTION_INHERIT
+{
+	ViewShare = 1,
+	ViewUnmap = 2
+} SECTION_INHERIT;
 
 typedef int      (WINAPI *_tlstrcmpiW)(LPCWSTR, LPCWSTR);
 typedef SIZE_T   (WINAPI *_tVirtualQuery)(LPCVOID, PMEMORY_BASIC_INFORMATION, SIZE_T);
